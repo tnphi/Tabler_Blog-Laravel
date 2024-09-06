@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\BlogTag;
 use App\Models\Blog;
 use App\Models\BlogCategory;
+use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 
 class BlogController extends Controller
@@ -111,5 +112,33 @@ class BlogController extends Controller
         }
 
         return redirect()->route('blog.create')->with('success', 'Blog created successfully');
+    }
+
+    public function getData(Request $request)
+    {
+        $blogs = Blog::with('categories')->select('blog.*');
+
+        return DataTables::eloquent($blogs)
+            ->addIndexColumn()
+            ->addColumn('status_label', function (Blog $blog) {
+                return '<span class="badge ' . ($blog->status ? 'bg-success' : 'bg-danger') . '">' . ($blog->status ? 'Đã xuất bản' : 'Bản nháp') . '</span>';
+            })
+            ->addColumn('categories_label', function (Blog $blog) {
+                return $blog->categories->map(function ($category) {
+                    return '<span class="badge bg-primary">' . $category->name . '</span>';
+                })->implode(' ');
+            })
+            ->addColumn('thumbnail', function (Blog $blog) {
+                if ($blog->featured_image) {
+                    return '<img src="' . $blog->featured_image . '" alt="' . $blog->title . '" class="img-thumbnail" style="width: 100px; height: 50px; object-fit:contain;">';
+                } else {
+                    return '<span>Không có ảnh</span>';
+                }
+            })
+            ->addColumn('actions', function (Blog $blog) {
+                return view('partials.blog_actions', compact('blog'))->render();
+            })
+            ->rawColumns(['status_label', 'categories_label', 'thumbnail', 'actions'])
+            ->make(true);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Yajra\DataTables\Facades\DataTables;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 
@@ -70,5 +71,24 @@ class BlogCategoryController extends Controller
         ]);
 
         return redirect()->route('blog_categories.index')->with('success', 'Category updated successfully.');
+    }
+
+
+    public function getData(Request $request)
+    {
+        $categories = BlogCategory::with('parent')->select('blog_category.*');
+
+        return DataTables::eloquent($categories)
+            ->addColumn('parent_name', function (BlogCategory $category) {
+                return $category->parent_id == 0 ? 'None' : optional($category->parent)->name;
+            })
+            ->addColumn('status_label', function (BlogCategory $category) {
+                return '<span class="badge ' . $category->status_badge_color . '">' . $category->status_label . '</span>';
+            })
+            ->addColumn('actions', function (BlogCategory $category) {
+                return view('partials.category_actions', compact('category'))->render();
+            })
+            ->rawColumns(['status_label', 'actions'])
+            ->make(true);
     }
 }

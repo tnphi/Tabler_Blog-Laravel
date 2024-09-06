@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link href="{{ asset('css/blog_create.css') }}" rel="stylesheet">
+@endsection
+
 @section('content')
     <div class="page-wrapper p-5">
         <div class="row">
@@ -77,18 +81,14 @@
                     </div>
                     <div class="mb-3">
                         <label for="tags" class="form-label">Tag</label>
-                        <div>
+                        <select class="form-control" id="tags" name="tags[]" multiple="multiple">
                             @foreach ($tags as $tag)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="tag{{ $tag->id }}"
-                                        name="tags[]" value="{{ $tag->id }}"
-                                        {{ $blog->tags->contains($tag->id) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="tag{{ $tag->id }}">
-                                        {{ $tag->name }}
-                                    </label>
-                                </div>
+                                <option value="{{ $tag->id }}"
+                                    {{ $blog->tags->contains($tag->id) ? 'selected' : '' }}>
+                                    {{ $tag->name }}
+                                </option>
                             @endforeach
-                        </div>
+                        </select>
                         <button type="button" class="btn btn-link p-0" data-bs-toggle="modal"
                             data-bs-target="#modal-add-tag">+ Thêm</button>
                     </div>
@@ -100,6 +100,15 @@
 @endsection
 
 @section('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#tags').select2({
+                tags: true,
+                tokenSeparators: [',', ' '],
+                placeholder: "Chọn hoặc thêm tag mới"
+            });
+        });
+    </script>
     <script type="module">
         import {
             ClassicEditor,

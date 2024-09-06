@@ -11,36 +11,11 @@
                         Tổng quan
                     </div>
                     <h2 class="page-title">
-                        Blogs
+                        Quản lý nghỉ phép
                     </h2>
                 </div>
                 <!-- Page title actions -->
-                <div class="col-auto ms-auto d-print-none">
-                    <div class="btn-list">
-                        <a href="/blog/create" class="btn btn-primary d-none d-sm-inline-block">
-                            <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M12 5l0 14" />
-                                <path d="M5 12l14 0" />
-                            </svg>
-                            Thêm blog mới
-                        </a>
-                        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal"
-                            data-bs-target="#modal-report" aria-label="Create new report">
-                            <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M12 5l0 14" />
-                                <path d="M5 12l14 0" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -51,20 +26,20 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Tất cả Blog</h3>
+                            <h3 class="card-title">Danh sách nghỉ phép</h3>
                         </div>
                         <div class="table-responsive">
-                            <table id="blogs-table" class="table card-table table-vcenter text-nowrap datatable">
+                            <table id="dayoffs-table" class="table card-table table-vcenter text-nowrap datatable">
                                 <thead>
                                     <tr>
                                         <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
-                                                aria-label="Select all blogs"></th>
+                                                aria-label="Select all dayoff"></th>
 
-                                        <th>Thumbnail</th>
-                                        <th>Title</th>
-                                        <th>Status</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Action</th>
+                                        <th>Họ và Tên</th>
+                                        <th>Lý do</th>
+                                        <th>Loại nghỉ phép</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-end">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,7 +64,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            var table = $('#blogs-table').DataTable({
+            var table = $('#dayoffs-table').DataTable({
                 processing: true,
                 serverSide: true,
                 language: {
@@ -109,46 +84,43 @@
                         "sLast": "Cuối"
                     }
                 },
-                ajax: '{{ route('blogs.data') }}',
+                ajax: '{{ route('dayoff.data') }}',
                 columns: [{
                         data: 'id',
                         name: 'id',
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: 'thumbnail',
-                        name: 'thumbnail',
                         orderable: false,
                         searchable: false
                     },
+
                     {
-                        data: 'title',
-                        name: 'title',
+                        data: 'user_id',
+                        name: 'user_id',
                         orderable: true,
-                        searchable: true
+                        searchable: true,
+                    },
+                    {
+                        data: 'content',
+                        name: 'content',
+                        orderable: true,
+                        searchable: true,
+                    },
+                    {
+                        data: 'leave_type_label',
+                        name: 'leave_type_label',
+                        orderable: true,
+                        searchable: true,
                     },
                     {
                         data: 'status_label',
-                        name: 'status',
+                        name: 'is_confirm',
                         orderable: true,
-                        searchable: true
-
-
-                    },
-                    {
-                        data: 'categories_label',
-                        name: 'categories_label',
-
-
-
+                        searchable: true,
                     },
                     {
                         data: 'actions',
                         name: 'actions',
                         orderable: false,
                         searchable: false
-
                     },
                 ],
                 columnDefs: [{
@@ -170,7 +142,7 @@
                 $('input[type="checkbox"]', rows).prop('checked', this.checked);
             });
 
-            $('#blogs-table tbody').on('change', 'input[type="checkbox"]', function() {
+            $('#tags-table tbody').on('change', 'input[type="checkbox"]', function() {
                 if (!this.checked) {
                     var el = $('#check-all').get(0);
                     if (el && el.checked && ('indeterminate' in el)) {
