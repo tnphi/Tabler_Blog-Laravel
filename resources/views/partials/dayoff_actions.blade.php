@@ -6,3 +6,6 @@
         <i class="fas fa-trash-alt"></i>
     </button>
 </form>
+<a href="{{ route('dayoff.view', $leaveRequest->id) }}" class="btn btn-success btn-sm">
+    <i class="fa-solid fa-eye"></i>
+</a>

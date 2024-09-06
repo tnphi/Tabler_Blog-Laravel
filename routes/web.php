@@ -32,4 +32,6 @@ Route::get('blogs/data', [BlogController::class, 'getData'])->name('blogs.data')
 Route::middleware(['auth'])->group(function () {
     Route::resource('dayoff', DayOffController::class)->except(['show']);
     Route::get('dayoff/data', [DayOffController::class, 'getData'])->name('dayoff.data');
+    Route::get('dayoff/view/{id}', [DayOffController::class, 'view'])->name('dayoff.view');
+    Route::put('/dayoff/approve/{id}', [DayOffController::class, 'approve'])->name('dayoff.approve');
 });

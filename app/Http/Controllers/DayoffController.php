@@ -16,6 +16,7 @@ class DayoffController extends Controller
         return view('dayoff.index');
     }
 
+
     public function create()
     {
 
@@ -28,6 +29,29 @@ class DayoffController extends Controller
         $leaveRequest->delete();
 
         return redirect()->route('dayoff.index')->with('success', 'Request deleted successfully');
+    }
+    public function view($id)
+    {
+        $leaveRequest = LeaveRequest::with('user')->findOrFail($id);
+        return view('dayoff.show', compact('leaveRequest'));
+    }
+
+    public function approve(Request $request, $id)
+    {
+        $leaveRequest = LeaveRequest::findOrFail($id);
+
+        // Kiểm tra hành động của người dùng
+        if ($request->input('action') == 'approve') {
+            $leaveRequest->is_confirm = 1; // Đã phê duyệt
+        } elseif ($request->input('action') == 'reject') {
+            $leaveRequest->is_confirm = 2; // Đã từ chối
+        }
+
+        // Lưu cập nhật vào DB
+        $leaveRequest->save();
+
+        // Điều hướng hoặc trả về kết quả cho người dùng
+        return redirect()->back()->with('success', 'Trạng thái đã được cập nhật thành công.');
     }
 
     public function store(Request $request)
