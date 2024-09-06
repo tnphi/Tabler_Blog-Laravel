@@ -7,6 +7,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveDate;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\LeaveRequestStatus;
 
 class DayoffController extends Controller
 {
@@ -33,7 +34,10 @@ class DayoffController extends Controller
     public function view($id)
     {
         $leaveRequest = LeaveRequest::with('user')->findOrFail($id);
-        return view('dayoff.show', compact('leaveRequest'));
+
+        $leaveDates = $leaveRequest->leaveDates->pluck('leave_date')->toArray();
+
+        return view('dayoff.show', compact('leaveRequest', 'leaveDates'));
     }
 
     public function approve(Request $request, $id)
@@ -106,7 +110,8 @@ class DayoffController extends Controller
             })
             // Cột trạng thái xác nhận
             ->addColumn('status_label', function (LeaveRequest $leaveRequest) {
-                return '<span class="badge ' . ($leaveRequest->is_confirm ? 'bg-success' : 'bg-danger') . '">' . ($leaveRequest->is_confirm ? 'Đã xác nhận' : 'Chưa xác nhận') . '</span>';
+                $statusEnum = LeaveRequestStatus::from($leaveRequest->is_confirm);
+                return '<span class="badge ' . $statusEnum->badgeColor() . '">' . $statusEnum->label() . '</span>';
             })
 
             // Cột nội dung

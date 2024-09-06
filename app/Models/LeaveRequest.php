@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\LeaveRequestStatus;
 
 class LeaveRequest extends Model
 {
@@ -18,5 +19,10 @@ class LeaveRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    // Trả về enum trạng thái
+    public function getStatusAttribute(): LeaveRequestStatus
+    {
+        return LeaveRequestStatus::from($this->is_confirm);
     }
 }

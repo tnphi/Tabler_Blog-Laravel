@@ -89,42 +89,28 @@
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/plugins/multiselect.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Các ngày nghỉ đã được chọn từ server (PHP)
+            let initialDates = @json($leaveDates); // Mảng các ngày từ PHP
+            console.log(initialDates);
+
             const picker = new Litepicker({
                 element: document.getElementById('datepicker'),
                 plugins: ['multiselect'],
-                inlineMode: true, // Hiển thị lịch từ đầu/
-                format: 'DD/MM/YYYY', // Định dạng ngày (tùy chọn)
+                inlineMode: true,
+                format: 'YYYY-MM-DD',
                 lang: 'vi-VN',
+                highlightedDays: initialDates, // Các ngày đã chọn
+                highlightedDaysFormat: 'YYYY-MM-DD',
                 setup: (picker) => {
                     picker.on('multiselect.select', (date) => {
-                        let currentDates = document.getElementById('leave_dates').value;
 
-                        // Nếu đã có giá trị, thêm dấu phẩy và ngày mới, nếu chưa thì thêm trực tiếp ngày
-                        if (currentDates) {
-                            currentDates += ',' + date.format('YYYY-MM-DD');
-                        } else {
-                            currentDates = date.format('YYYY-MM-DD');
-                        }
-
-                        // Cập nhật giá trị vào input ẩn
-                        document.getElementById('leave_dates').value = currentDates;
-
-                        console.log('Updated Dates:', currentDates);
                     });
+
                     picker.on('multiselect.deselect', (date) => {
-                        console.log('Ngày đã bỏ chọn:', date);
 
-                        // Lấy giá trị hiện tại của input ẩn
-                        let currentDates = document.getElementById('leave_dates').value.split(
-                            ',');
-
-                        // Xóa ngày được bỏ chọn ra khỏi danh sách
-                        currentDates = currentDates.filter(d => d !== date.format(
-                            'YYYY-MM-DD'));
-
-                        // Cập nhật lại giá trị của input ẩn
-                        document.getElementById('leave_dates').value = currentDates.join(',');
-                        console.log('Updated Dates after deselect:', currentDates);
+                    });
+                    picker.setOptions({
+                        disablePicker: true
                     });
                 },
             });
